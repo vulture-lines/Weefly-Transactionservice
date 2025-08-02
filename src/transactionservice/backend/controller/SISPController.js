@@ -132,6 +132,7 @@ exports.startPayment = async (req, res) => {
     outwardFlight,
     returnFlight,
     Travellerdetail,
+    Receiptdetails,
   } = req.body;
   console.log(req.body);
   // const amount = "1000";
@@ -254,6 +255,7 @@ exports.startPayment = async (req, res) => {
             returnFlight: returnFlight,
           }),
         Travellerdetails: Travellerdetail,
+        Receiptdetails: Receiptdetails,
       },
     });
   } catch (error) {
@@ -474,10 +476,7 @@ exports.Paymentresponse = async (req, res) => {
           Paymentstatus: Paymentstatus,
         }
       );
-      res.status(500).json({
-        status: "ServerError",
-        message: "Internal Server Error",
-      });
+      res.status(500).redirect(process.env.UNSUCCESS_URL);
     } catch (error) {
       console.error(error);
     }
@@ -495,5 +494,25 @@ exports.Paymentresponse = async (req, res) => {
     } catch (error) {
       console.error(error);
     }
+  }
+};
+
+exports.getPaymentDetails = async (req, res) => {
+  const SupplierReference = req.params.id;
+  try {
+    const result = await Payment.findOne({
+      "TravelfusionBookingDetails.BookingCheckResponse.additionalInfo.SupplierReference":
+        SupplierReference,
+    });
+
+    if (!result) {
+      return res
+        .status(404)
+        .json({ message: "No record found for the given Supplier Reference." });
+    }
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.log(error);
   }
 };

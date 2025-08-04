@@ -1,11 +1,11 @@
-name: Deploy TransactionService Backend
+name: Deploy UserService Backend
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'src/transactionservice/backend/**'
+      - 'src/userservice/backend/**'
 
 jobs:
   deploy:
@@ -25,22 +25,22 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /home/ubuntu/Weefly-Transactionservice/src/transactionservice/backend
+            cd /home/ubuntu/Weefly-Transactionservice/src/userservice/backend
 
-            # Discard local changes that block git pull
+            # Discard any local changes that would block git pull
             git reset --hard HEAD
 
-            # Pull latest code
+            # Pull latest changes from repo
             git pull origin main
 
-            # Fix file and folder permissions
+            # Fix file permissions
             sudo chown -R ubuntu:ubuntu .
             chmod -R u+rw .
 
             # Install dependencies
             npm install
 
-            # Restart app using PM2
-            pm2 delete transactionservice || true
-            pm2 start npm --name "transactionservice" -- run prod
+            # Restart the app with PM2
+            pm2 delete user-service || true
+            pm2 start npm --name "user-service" -- run prod
           EOF

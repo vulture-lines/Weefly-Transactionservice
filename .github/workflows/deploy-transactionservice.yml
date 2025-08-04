@@ -26,8 +26,21 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             cd /home/ubuntu/Weefly-Transactionservice/src/transactionservice/backend
+
+            # Discard local changes that block git pull
+            git reset --hard HEAD
+
+            # Pull latest code
             git pull origin main
+
+            # Fix file and folder permissions
+            sudo chown -R ubuntu:ubuntu .
+            chmod -R u+rw .
+
+            # Install dependencies
             npm install
+
+            # Restart app using PM2
             pm2 delete transactionservice || true
             pm2 start npm --name "transactionservice" -- run prod
           EOF

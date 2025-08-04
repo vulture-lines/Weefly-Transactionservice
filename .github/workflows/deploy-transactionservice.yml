@@ -23,10 +23,13 @@ jobs:
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
     - name: Deploy to EC2
+      env:
+        EC2_HOST: ${{ secrets.EC2_HOST }}
+        EC2_USER: ${{ secrets.EC2_USER }}
       run: |
-        ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          cd /home/ubuntu/Weefly-Transactionservice/src/transactionservice/backend
-          git pull origin main
-          npm install
-          pm2 restart transactionservice
-        EOF
+        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@$EC2_3.6.180.87 '
+          cd /home/ubuntu/Weefly-Transactionservice/src/transactionservice/backend &&
+          git pull origin main &&
+          npm install &&
+          pm2 restart transactionservice || pm2 start npm --name "transactionservice" -- run prod
+        '

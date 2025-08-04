@@ -22,11 +22,12 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-    - name: Deploy to EC2
+     - name: Deploy to EC2
       run: |
-        ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+        ssh ubuntu@EC2_3.6.180.87<< 'EOF'
           cd /home/ubuntu/Weefly-Transactionservice/src/transactionservice/backend
           git pull origin main
           npm install
-          pm2 restart transactionservice
+          pm2 delete your-app-name || true  # Optional: delete if already running
+          pm2 start npm --name "your-app-name" -- run prod
         EOF

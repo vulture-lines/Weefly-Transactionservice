@@ -21,7 +21,7 @@ connectDb();
 if (process.env.NODE_ENV !== "production") {
   const token=generateToken();
   console.log(token)
-}
+} 
 //Pipeline check     
 app.use("/transactionapi",sisproutes);
 app.use("/transactionapi",commissionRoutes);

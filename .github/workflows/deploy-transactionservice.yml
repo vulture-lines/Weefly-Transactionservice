@@ -33,4 +33,11 @@ jobs:
           npm install
           pm2 delete transactionservice || true
           pm2 start npm --name "transactionservice" -- run prod
+
+      run: |
+        ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          cd /home/ubuntu/Weefly-Transactionservice/src/transactionservice/backend
+          git pull origin main
+          npm install
+          pm2 restart transactionservice
         EOF

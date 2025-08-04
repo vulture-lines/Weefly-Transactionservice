@@ -32,12 +32,7 @@ app.get("/transactionapi", (req, res) => {
   res.send("✅ Transaction Service API is running");
 });
 
-app.get("/",(req,res)=>{
-  res.send("✅ Transaction Service API is running");
-}
-);
-
-app.get("/get",(req,res)=>{
+app.get("/transactionapi/get",(req,res)=>{
   res.send("✅ Transaction Service API is running pipline check");
 }
 );

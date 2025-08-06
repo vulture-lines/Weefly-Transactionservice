@@ -10,6 +10,7 @@ const commissionRoutes=require("./routes/Commisionroutes");
 const cardRoutes=require("./routes/Cardroutes");
 const ticketDetail=require("./routes/Ticketdetailroute")
 const { generateToken } = require("./utils/generate-token");
+const { transactionCancelledInternal } = require("./services/Emailservice");
 const app = express();
 dotenv.config();
 const port = process.env.PORT ;
@@ -28,8 +29,8 @@ app.use("/transactionapi",commissionRoutes);
 app.use("/transactionapi",cardRoutes);
 app.use("/transactionapi",ticketDetail);
 
-
+transactionCancelledInternal("hariraghava21s@gmail.com","Mr. Hari Raghav S");
 
 app.listen(port, () => {
   console.log(`Transaction Service Server running in http://localhost:${port}`);
-}); 
+});

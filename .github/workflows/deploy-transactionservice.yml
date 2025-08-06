@@ -1,11 +1,11 @@
-name: Deploy UserService Backend
+name: Deploy TransactionService Backend
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'src/userservice/backend/**'
+      - 'src/transactionservice/backend/**'
 
 jobs:
   deploy:
@@ -25,22 +25,25 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /home/ubuntu/Weefly-Transactionservice/src/userservice/backend
+            set -e
 
-            # Discard any local changes that would block git pull
-            git reset --hard HEAD
+            echo "📁 Moving to TransactionService backend directory..."
+            cd /home/ubuntu/Weefly-Transactionservice/src/transactionservice/backend
 
-            # Pull latest changes from repo
-            git pull origin main
+            echo "📦 Resetting repo..."
+            git fetch origin
+            git reset --hard origin/main
 
-            # Fix file permissions
+            echo "🔧 Setting permissions..."
             sudo chown -R ubuntu:ubuntu .
             chmod -R u+rw .
 
-            # Install dependencies
+            echo "📦 Installing dependencies..."
             npm install
 
-            # Restart the app with PM2
-            pm2 delete user-service || true
-            pm2 start npm --name "user-service" -- run prod
+            echo "🚀 Restarting PM2 app..."
+            pm2 delete transaction-service || true
+            pm2 start npm --name "transaction-service" -- run prod
+
+            echo "✅ TransactionService deployment complete."
           EOF

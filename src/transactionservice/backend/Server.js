@@ -32,4 +32,4 @@ app.use("/transactionapi",ticketDetail);
 
 app.listen(port, () => {
   console.log(`Transaction Service Server running in http://localhost:${port}`);
-});
+}); 

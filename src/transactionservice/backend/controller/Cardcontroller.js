@@ -9,6 +9,8 @@ const { cookieencrypt } = require("../utils/Cookie");
 exports.addCard = async (req, res) => {
   try {
     const { Cardtype } = req.body;
+    console.log(req.body);
+    
 
     if (!Cardtype) {
       return res.status(400).json({ error: "Cardtype is required" });
@@ -21,7 +23,9 @@ exports.addCard = async (req, res) => {
     });
 
     if (duplicate) {
-      return res.status(409).json({ error: "Card with this type already exists" });
+      return res
+        .status(409)
+        .json({ error: "Card with this type already exists" });
     }
 
     const newCard = new Card(req.body);
@@ -52,7 +56,9 @@ exports.updateCard = async (req, res) => {
       });
 
       if (duplicate) {
-        return res.status(409).json({ error: "Card with this type already exists" });
+        return res
+          .status(409)
+          .json({ error: "Card with this type already exists" });
       }
     }
 
@@ -96,7 +102,8 @@ exports.getCardByType = async (req, res) => {
     }));
 
     const matchedCard = decryptedCards.find(
-      (card) => card.Cardtype.toLowerCase() === req.params.cardname.toLowerCase()
+      (card) =>
+        card.Cardtype.toLowerCase() === req.params.cardname.toLowerCase()
     );
 
     if (!matchedCard) {
@@ -120,10 +127,15 @@ exports.decryptPayload = async (req, res) => {
     }
 
     const decryptedData = Payload.decryptPayload(payload);
-    res.json({ message: "Payload decrypted successfully", data: decryptedData });
+    res.json({
+      message: "Payload decrypted successfully",
+      data: decryptedData,
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to decrypt payload", details: err.message });
+    res
+      .status(500)
+      .json({ error: "Failed to decrypt payload", details: err.message });
   }
 };
 
@@ -152,8 +164,17 @@ exports.getAllCards = async (req, res) => {
 // POST /injecttoken
 exports.injectToken = async (req, res) => {
   const origin = req.headers.origin || req.headers.referer || "";
-  const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
-  const isAllowed = allowedOrigins.some((allowed) => origin.startsWith(allowed));
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://dev.weefly.africa",
+    "https://weefly.africa",
+    "http://localhost:3001",
+    "http://localhost:3000",
+  ];
+  const isAllowed = allowedOrigins.some((allowed) =>
+    origin.startsWith(allowed)
+  );
 
   if (!isAllowed) {
     return res.status(403).json({ message: "Forbidden origin" });
@@ -164,10 +185,12 @@ exports.injectToken = async (req, res) => {
     const key = getKey();
     const encryptedToken = cookieencrypt(token, key);
 
-    res.cookie("token", encryptedToken, {
-      maxAge: 60 * 60 * 1000,
-      path: "/",
-    }).send("Token Set");
+    res
+      .cookie("token", encryptedToken, {
+        maxAge: 60 * 60 * 1000,
+        path: "/",
+      })
+      .send("Token Set");
   } catch (error) {
     console.error("Token injection error:", error);
     return res.status(500).json({ message: "Internal server error" });

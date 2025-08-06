@@ -3,11 +3,15 @@ const { Schema } = mongoose;
 
 const paymentSchema = new Schema({
   transactionid: { type: String, required: true },
-  merchantSession:{ type: String, required: true },
+  merchantSession: { type: String, required: true },
   paymentdate: { type: String, required: true },
   paymentamount: { type: String, required: true },
   senderemail: { type: String, required: true },
-  senderid:{type:mongoose.Types.ObjectId,required:true},
+  senderid: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+    ref: 'userdetails',
+  },
   billAddrCountry: { type: String, required: true },
   billAddrCity: { type: String, required: true },
   billAddrLine1: { type: String, required: true },
@@ -17,8 +21,8 @@ const paymentSchema = new Schema({
   Paymentresponse: { type: Schema.Types.Mixed, required: true },
   Paymentstatus: { type: String, required: true },
   Refundstatus: { type: String, required: true },
-  TravelfusionBookingDetails : { type: Schema.Types.Mixed },
-  TravelfusionBookingStatus : { type: String},
+  TravelfusionBookingDetails: { type: Schema.Types.Mixed },
+  TravelfusionBookingStatus: { type: String },
 });
 
 const Payment = mongoose.model("Payment", paymentSchema);

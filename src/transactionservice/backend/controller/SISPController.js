@@ -6,6 +6,12 @@ const { parseStringPromise } = require("xml2js");
 const mongoose = require("mongoose");
 const { Countrycode } = require("../utils/Countrycodeconverter");
 const { Payment } = require("../models/SISSPPaymentdb");
+const {
+  transactionInform,
+  transactionCancelledByUser,
+  transactionCancelledExternal,
+  transactionSuccessful,
+} = require("../services/Emailservice");
 
 dotenv.config();
 // Test credentials and config
@@ -258,6 +264,30 @@ exports.startPayment = async (req, res) => {
         Receiptdetails: Receiptdetails,
       },
     });
+    try {
+      console.log("User service API call");
+
+      const latestPayment = await Payment.findOne().sort({ _id: -1 });
+      const userId = latestPayment.senderid;
+      const userService = process.env.USER_SERVICE_URL;
+      const userres = await fetch(`${userService}/getuser/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "http://localhost:3001",
+        },
+      });
+      if (!userres.ok) {
+        return console.error("Couldn't find user!!", userres);
+      } else {
+        const user = await userres.json();
+        const email = user.userdetail.Emailaddress;
+        const name = user.userdetail.Name;
+        transactionInform(email, name);
+      }
+    } catch (error) {
+      return console.log("error in getting user details", error);
+    }
   } catch (error) {
     console.error(error);
   }
@@ -268,10 +298,32 @@ exports.startPayment = async (req, res) => {
 // Payment response endpoint to validate response fingerprint
 exports.Paymentresponse = async (req, res) => {
   let Paymentstatus;
+  let user;
   const successMessageTypes = ["8", "10", "M", "P"];
   const body = req.body;
   console.log("Payment response received:", body);
   const travelFusionApi = process.env.FLIGHT_API;
+  try {
+    console.log("User service API call");
+
+    const latestPayment = await Payment.findOne().sort({ _id: -1 });
+    const userId = latestPayment.senderid;
+    const userService = process.env.USER_SERVICE_URL;
+    const userres = await fetch(`${userService}/getuser/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Origin: "http://localhost:3001",
+      },
+    });
+    if (!userres.ok) {
+      return console.error("Couldn't find user!!", userres);
+    } else {
+      user = await userres.json();
+    }
+  } catch (error) {
+    return console.log("error in getting user details", error);
+  }
   if (successMessageTypes.includes(body.messageType)) {
     const calculatedFingerprint = generateFingerprintForResponse(
       posAuthCode,
@@ -395,10 +447,11 @@ exports.Paymentresponse = async (req, res) => {
 
         const status = bookingStatus.toLowerCase();
         const bookid = checkBookingResult.additionalInfo.SupplierReference[0];
+        let latestPayment;
         try {
           console.log("User service API call");
 
-          const latestPayment = await Payment.findOne().sort({ _id: -1 });
+          latestPayment = await Payment.findOne().sort({ _id: -1 });
           const userId = latestPayment.senderid;
           const userService = process.env.USER_SERVICE_URL;
           const details = {
@@ -422,9 +475,14 @@ exports.Paymentresponse = async (req, res) => {
         } catch (error) {
           return console.log(error);
         }
-
+        const email = user.userdetail.Emailaddress;
+        const Name = user.userdetail.Name;
+        const paymentamount = latestPayment.Paymentresponse.dccAmount
+          ? latestPayment.Paymentresponse.dccAmount
+          : latestPayment.paymentamount;
         switch (status) {
           case "succeeded":
+            transactionSuccessful(email, Name, paymentamount);
             res.status(201).redirect(`${process.env.SUCCESS_URL}/${bookid}`);
             break;
 
@@ -461,7 +519,12 @@ exports.Paymentresponse = async (req, res) => {
             Paymentstatus: Paymentstatus,
           }
         );
-        res.status(422).redirect(process.env.UNSUCCESS_URL);
+        const email = user.userdetail.Emailaddress;
+        const Name = user.userdetail.Name;
+        transactionCancelledInternal(email, Name);
+        res
+          .status(422)
+          .redirect(process.env.PAYMENT_TRANSACTION_INTERNAL_ERROR_URL);
       } catch (error) {
         console.error(error + "f");
       }
@@ -476,7 +539,12 @@ exports.Paymentresponse = async (req, res) => {
           Paymentstatus: Paymentstatus,
         }
       );
-      res.status(500).redirect(process.env.UNSUCCESS_URL);
+      const email = user.userdetail.Emailaddress;
+      const Name = user.userdetail.Name;
+      transactionCancelledByUser(email, Name);
+      res
+        .status(500)
+        .redirect(process.env.PAYMENT_TRANSACTION_USER_CANCELLED_URL);
     } catch (error) {
       console.error(error);
     }
@@ -487,10 +555,12 @@ exports.Paymentresponse = async (req, res) => {
       paymentDetail.Paymentstatus = Paymentstatus;
       paymentDetail.Paymentresponse = body;
       await paymentDetail.save();
-      res.status(500).json({
-        status: "ServerError",
-        message: "External Server Error",
-      });
+      const email = user.userdetail.Emailaddress;
+      const Name = user.userdetail.Name;
+      transactionCancelledExternal(email, Name);
+      res
+        .status(500)
+        .redirect(process.env.PAYMENT_TRANSACTION_EXTERNAL_ERROR_URL);
     } catch (error) {
       console.error(error);
     }

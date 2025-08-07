@@ -11,6 +11,7 @@ const {
   transactionCancelledByUser,
   transactionCancelledExternal,
   transactionSuccessful,
+  transactionCancelledInternalissue,
 } = require("../services/Emailservice");
 
 dotenv.config();
@@ -521,7 +522,8 @@ exports.Paymentresponse = async (req, res) => {
         );
         const email = user.userdetail.Emailaddress;
         const Name = user.userdetail.Name;
-        transactionCancelledInternal(email, Name);
+        transactionCancelledInternalissue(email,Name)
+        // transactionCancelledInternal(email, Name);
         res
           .status(422)
           .redirect(process.env.PAYMENT_TRANSACTION_INTERNAL_ERROR_URL);

@@ -100,7 +100,7 @@ const transactionCancelledByUser = (email, Name) => {
   });
 };
 
-const transactionCancelledInternal = (email, Name) => {
+const transactionCancelledInternalissue = (email, Name) => {
   const mailOptions = {
     from: process.env.EMAILUSER,
     to: email,
@@ -233,5 +233,5 @@ module.exports = {
   transactionCancelledByUser,
   transactionSuccessful,
   transactionCancelledExternal,
-  transactionCancelledInternal,
+  transactionCancelledInternalissue
 };

@@ -23,9 +23,6 @@ if (process.env.NODE_ENV !== "production") {
   const token=generateToken();
   console.log(token)
 }
-app.get("/check",async (req,res) => {
-  res.status(200).send("Pipeline works!!")
-})
 
 app.use("/transactionapi",sisproutes);
 app.use("/transactionapi",commissionRoutes);

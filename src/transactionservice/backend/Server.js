@@ -28,6 +28,9 @@ app.use("/transactionapi",sisproutes);
 app.use("/transactionapi",commissionRoutes);
 app.use("/transactionapi",cardRoutes);
 app.use("/transactionapi",ticketDetail);
+app.get("/check",async (req,res) => {
+  res.status(200).send("Pipeline works!!")
+})
 
 app.listen(port, () => {
   console.log(`Transaction Service Server running in http://localhost:${port}`);

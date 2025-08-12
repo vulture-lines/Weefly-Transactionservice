@@ -177,17 +177,17 @@ exports.startPayment = async (req, res) => {
     is3DSec: "1",
     urlMerchantResponse: responseUrl,
     languageMessages: "en",
-    timeStamp: dateTime,
-    fingerprintversion: "1",
+    TimeStamp: dateTime,
+    FingerPrintVersion: "1",
     entityCode: "",
     referenceNumber: "",
     purchaseRequest: purchaseRequestEncoded,
   };
 
   // Generate fingerprint for request
-  formData.fingerprint = generateFingerprintForRequest(
+  formData.FingerPrint = generateFingerprintForRequest(
     posAuthCode,
-    formData.timeStamp,
+    formData.TimeStamp,
     formData.amount,
     formData.merchantRef,
     formData.merchantSession,
@@ -210,12 +210,12 @@ exports.startPayment = async (req, res) => {
   //   encodeURIComponent(formData.fingerprintversion);
 
   var postURL =
-    `${threeDSServerUrl}/CardPayment?FingerPrint=` +
-    encodeURIComponent(formData.fingerprint) +
+    `${threeDSServerUrl}?FingerPrint=` +
+    encodeURIComponent(formData.FingerPrint) +
     "&TimeStamp=" +
-    encodeURIComponent(formData.timeStamp) +
+    encodeURIComponent(formData.TimeStamp) +
     "&FingerPrintVersion=" +
-    encodeURIComponent(formData.fingerprintversion);
+    encodeURIComponent(formData.FingerPrintVersion);
 
   // Build auto-submit form
   let formHtml =
@@ -561,8 +561,7 @@ exports.Paymentresponse = async (req, res) => {
       const Name = user.userdetail.Name;
       transactionCancelledExternal(email, Name);
       res
-        .status(500)
-        .redirect(process.env.PAYMENT_TRANSACTION_EXTERNAL_ERROR_URL);
+        .status(500).send("External error")
     } catch (error) {
       console.error(error);
     }

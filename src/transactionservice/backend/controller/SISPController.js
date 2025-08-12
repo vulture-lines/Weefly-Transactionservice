@@ -210,7 +210,13 @@ exports.startPayment = async (req, res) => {
   //   encodeURIComponent(formData.fingerprintversion);
 
   var postURL =
-    `${threeDSServerUrl}/CardPayment`
+    `${threeDSServerUrl}/CardPayment?FingerPrint=` +
+    encodeURIComponent(formData.fingerprint) +
+    "&TimeStamp=" +
+    encodeURIComponent(formData.timeStamp) +
+    "&FingerPrintVersion=" +
+    encodeURIComponent(formData.fingerprintversion);
+
   // Build auto-submit form
   let formHtml =
     "<html><head><title>Payment vinti4 Test</title></head><body onload='autoPost()'>";

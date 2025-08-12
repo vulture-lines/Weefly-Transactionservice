@@ -200,15 +200,6 @@ exports.startPayment = async (req, res) => {
 
   console.log("Sending formData to 3DS Server:", formData);
 
-  // Payment gateway post URL for test environment
-  // var postURL =
-  //   `${vinti4CvUrl}/CardPayment?FingerPrint=` +
-  //   encodeURIComponent(formData.fingerprint) +
-  //   "&TimeStamp=" +
-  //   encodeURIComponent(formData.timeStamp) +
-  //   "&FingerPrintVersion=" +
-  //   encodeURIComponent(formData.fingerprintversion);
-
   var postURL =
     `${threeDSServerUrl}?FingerPrint=` +
     encodeURIComponent(formData.FingerPrint) +
@@ -522,7 +513,7 @@ exports.Paymentresponse = async (req, res) => {
         );
         const email = user.userdetail.Emailaddress;
         const Name = user.userdetail.Name;
-        transactionCancelledInternalissue(email,Name)
+        transactionCancelledInternalissue(email, Name);
         // transactionCancelledInternal(email, Name);
         res
           .status(422)
@@ -561,7 +552,8 @@ exports.Paymentresponse = async (req, res) => {
       const Name = user.userdetail.Name;
       transactionCancelledExternal(email, Name);
       res
-        .status(500).send("External error")
+        .status(500)
+        .redirect(process.env.PAYMENT_TRANSACTION_EXTERNAL_ERROR_URL);
     } catch (error) {
       console.error(error);
     }

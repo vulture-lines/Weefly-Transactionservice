@@ -191,6 +191,7 @@ exports.injectToken = async (req, res) => {
         secure: true,
         httpOnly: true,
         sameSite: "None",
+        domain:".weefly.africa"
       })
       .send("Token Set");
   } catch (error) {

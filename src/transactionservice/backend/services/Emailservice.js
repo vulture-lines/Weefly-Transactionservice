@@ -100,7 +100,7 @@ const transactionCancelledByUser = (email, Name) => {
   });
 };
 
-const transactionCancelledInternalissue = (email, Name) => {
+const transactionCancelledInternalIssue = (email, Name) => {
   const mailOptions = {
     from: process.env.EMAILUSER,
     to: email,
@@ -187,7 +187,7 @@ const transactionCancelledExternal = (email, Name) => {
   });
 };
 
-const transactionSuccessful = (email, Name, paymentamount) => {
+const transactionSuccessful = (email, Name, paymentamount,paymentcurrency) => {
   const mailOptions = {
     from: process.env.EMAILUSER,
     to: email,
@@ -198,7 +198,7 @@ const transactionSuccessful = (email, Name, paymentamount) => {
     html: `
       <strong>Dear ${Name},</strong>
       <p>
-        We’re pleased to inform you that your payment of <strong>${paymentamount} CVE</strong> on WeeFly has been 
+        We’re pleased to inform you that your payment of <strong>${paymentamount} ${paymentcurrency}</strong> on WeeFly has been 
         successfully completed.<br><br>The transaction was securely processed. If you recognize this payment, no further action 
         is required.<br><br>If you did not authorize this transaction or notice anything unusual, please contact our support team immediately.
       </p>
@@ -233,5 +233,5 @@ module.exports = {
   transactionCancelledByUser,
   transactionSuccessful,
   transactionCancelledExternal,
-  transactionCancelledInternalissue
+  transactionCancelledInternalIssue,
 };

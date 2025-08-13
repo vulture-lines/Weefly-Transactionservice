@@ -11,7 +11,7 @@ const {
   transactionCancelledByUser,
   transactionCancelledExternal,
   transactionSuccessful,
-  transactionCancelledInternalissue,
+  transactionCancelledInternalIssue,
 } = require("../services/Emailservice");
 
 dotenv.config();
@@ -472,9 +472,12 @@ exports.Paymentresponse = async (req, res) => {
         const paymentamount = latestPayment.Paymentresponse.dccAmount
           ? latestPayment.Paymentresponse.dccAmount
           : latestPayment.paymentamount;
+        const paymentcurrency = latestPayment.Paymentresponse.dccAmount
+          ? latestPayment.Paymentresponse.dccCurrency
+          : "CVE";
         switch (status) {
           case "succeeded":
-            transactionSuccessful(email, Name, paymentamount);
+            transactionSuccessful(email, Name, paymentamount,paymentcurrency);
             res.status(201).redirect(`${process.env.SUCCESS_URL}/${bookid}`);
             break;
 
@@ -513,8 +516,7 @@ exports.Paymentresponse = async (req, res) => {
         );
         const email = user.userdetail.Emailaddress;
         const Name = user.userdetail.Name;
-        transactionCancelledInternalissue(email, Name);
-        // transactionCancelledInternal(email, Name);
+        transactionCancelledInternalIssue(email, Name);
         res
           .status(422)
           .redirect(process.env.PAYMENT_TRANSACTION_INTERNAL_ERROR_URL);

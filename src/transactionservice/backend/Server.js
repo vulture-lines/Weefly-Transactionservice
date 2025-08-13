@@ -10,7 +10,6 @@ const commissionRoutes=require("./routes/Commisionroutes");
 const cardRoutes=require("./routes/Cardroutes");
 const ticketDetail=require("./routes/Ticketdetailroute")
 const { generateToken } = require("./utils/generate-token");
-
 const app = express();
 dotenv.config();
 const port = process.env.PORT ;
@@ -28,6 +27,7 @@ app.use("/transactionapi",sisproutes);
 app.use("/transactionapi",commissionRoutes);
 app.use("/transactionapi",cardRoutes);
 app.use("/transactionapi",ticketDetail);
+
 
 
 app.listen(port, () => {

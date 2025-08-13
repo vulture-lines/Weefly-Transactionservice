@@ -188,11 +188,16 @@ exports.injectToken = async (req, res) => {
       .cookie("token", encryptedToken, {
         maxAge: 60 * 60 * 1000,
         path: "/",
-        domain:".weefly.africa"
+        domain: ".weefly.africa",
+        secure: true,
+        httpOnly: false,
+        sameSite: "None",
       })
       .send("Token Set");
   } catch (error) {
     console.error("Token injection error:", error);
-    return res.status(500).json({ message: "Internal server error",error: error });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error });
   }
 };

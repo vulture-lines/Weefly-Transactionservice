@@ -193,6 +193,6 @@ exports.injectToken = async (req, res) => {
       .send("Token Set");
   } catch (error) {
     console.error("Token injection error:", error);
-    return res.status(500).json({ message: "Internal server error",error:error });
+    return res.status(500).json({ message: "Internal server error",error: error });
   }
 };

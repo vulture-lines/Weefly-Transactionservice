@@ -188,8 +188,9 @@ exports.injectToken = async (req, res) => {
       .cookie("token", encryptedToken, {
         maxAge: 60 * 60 * 1000,
         path: "/",
-        domain: ".weefly.africa",
-        sameSite: "lax",
+        secure: true,
+        httpOnly: true,
+        sameSite: "None",
       })
       .send("Token Set");
   } catch (error) {

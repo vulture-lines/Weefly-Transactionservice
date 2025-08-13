@@ -189,7 +189,7 @@ exports.injectToken = async (req, res) => {
         maxAge: 60 * 60 * 1000,
         path: "/",
         domain: ".weefly.africa",
-        secure: true,
+        secure: false,
         httpOnly: false,
         sameSite: "None",
       })

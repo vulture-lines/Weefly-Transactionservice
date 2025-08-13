@@ -16,7 +16,20 @@ const port = process.env.PORT ;
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://dev.weefly.africa",
+  "https://weefly.africa",
+  "http://localhost:3001",
+  "http://localhost:3000",
+];
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 connectDb();
 if (process.env.NODE_ENV !== "production") {
   const token=generateToken();

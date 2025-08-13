@@ -10,7 +10,6 @@ exports.addCard = async (req, res) => {
   try {
     const { Cardtype } = req.body;
     console.log(req.body);
-    
 
     if (!Cardtype) {
       return res.status(400).json({ error: "Cardtype is required" });
@@ -189,6 +188,9 @@ exports.injectToken = async (req, res) => {
       .cookie("token", encryptedToken, {
         maxAge: 60 * 60 * 1000,
         path: "/",
+        sameSite: "none",
+        secure: true,
+        httpOnly: false,
       })
       .send("Token Set");
   } catch (error) {

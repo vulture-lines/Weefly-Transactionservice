@@ -189,9 +189,7 @@ exports.injectToken = async (req, res) => {
         maxAge: 60 * 60 * 1000,
         path: "/",
         domain: ".weefly.africa",
-        secure: false,
-        httpOnly: false,
-        sameSite: "None",
+        sameSite: "lax",
       })
       .send("Token Set");
   } catch (error) {

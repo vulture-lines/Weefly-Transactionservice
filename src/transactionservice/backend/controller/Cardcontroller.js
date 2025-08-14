@@ -183,7 +183,7 @@ exports.injectToken = async (req, res) => {
     const token = generateToken();
     const key = getKey();
     const encryptedToken = cookieencrypt(token, key);
-
+    const isProduction = process.env.NODE_ENV === "production";
     res
       .cookie("token", encryptedToken, {
         maxAge: 60 * 60 * 1000,
@@ -191,7 +191,7 @@ exports.injectToken = async (req, res) => {
         secure: true,
         httpOnly: true,
         sameSite: "None",
-        domain:".weefly.africa"
+        domain: isProduction ? ".weefly.africa" : undefined,
       })
       .send("Token Set");
   } catch (error) {
